@@ -38,12 +38,13 @@ func CreateTask(newTasks []Task) {
 			log.Fatal(err)
 		}
 
+		// converts the JSON content into a slice
 		json.Unmarshal(data, &existingTasks)
 	}
 
 	existingTasks = append(existingTasks, newTasks...)
 
-	// convert struct to JSON
+	// convert slice content to JSON content
 	data, err := json.MarshalIndent(existingTasks, "", "\t")
 	if err != nil {
 		log.Fatal(err)

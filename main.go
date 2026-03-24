@@ -10,7 +10,7 @@ func main() {
 	fmt.Println("Go Task Tracker")
 
 	tasks := []t.Task{
-		{ID: 1, Description: "Buy groceries", Status: "todo"},
+		{ID: 4, Description: "Get daughter from school", Status: t.Status{Name: "todo"}},
 	}
 
 	t.CreateTask(tasks)

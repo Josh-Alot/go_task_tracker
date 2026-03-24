@@ -6,12 +6,16 @@ import (
 	"os"
 )
 
+type Status struct {
+	Name string
+}
+
 type Task struct {
 	ID          int
 	Description string
-	Status      string
-	CreatedAt   string
-	UpdatedAt   string
+	Status
+	CreatedAt string
+	UpdatedAt string
 }
 
 func CreateTask(tasks []Task) error {

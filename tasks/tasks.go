@@ -18,8 +18,7 @@ type Task struct {
 	UpdatedAt string
 }
 
-func CreateTask(newTasks []Task, fileName string) error {
-	filePath := fileName
+func CreateTask(newTasks []Task, filePath string) error {
 	var err error
 	var existingTasks []Task
 
@@ -53,4 +52,16 @@ func CreateTask(newTasks []Task, fileName string) error {
 
 	os.WriteFile(filePath, data, 0644)
 	return err
+}
+
+func ListTasks(filePath string) ([]Task, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	tasks := []Task{}
+
+	json.Unmarshal(data, &tasks)
+
+	return tasks, err
 }

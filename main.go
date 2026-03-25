@@ -7,13 +7,7 @@ import (
 )
 
 func main() {
-	tasks := []t.Task{
-		{ID: 1, Description: "Buy groceries", Status: t.Status{Name: "todo"}},
-		{ID: 2, Description: "Wash my car", Status: t.Status{Name: "todo"}},
-		{ID: 3, Description: "Sweep house", Status: t.Status{Name: "todo"}},
-		{ID: 4, Description: "Get daughter from school", Status: t.Status{Name: "todo"}},
-	}
+	tasks, _ := t.ListTasks("tasks.json")
 
-	t.CreateTask(tasks, "tasks.json")
 	fmt.Println(tasks)
 }

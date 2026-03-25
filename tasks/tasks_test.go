@@ -85,3 +85,45 @@ func TestCreateMultipletTasks(t *testing.T) {
 		t.Errorf("Task description didn't match")
 	}
 }
+
+func TestListTasks(t *testing.T) {
+	testFile := "test.json"
+	defer os.Remove(testFile)
+
+	tasks := []Task{
+		{ID: 1, Description: "Task 1", Status: Status{Name: "todo"}},
+		{ID: 2, Description: "Task 2", Status: Status{Name: "in_progress"}},
+	}
+
+	// first creates the test file
+	CreateTask(tasks, testFile)
+
+	// check if the file returns
+	listTasks, err := ListTasks(testFile)
+
+	if _, err = os.Stat(testFile); os.IsNotExist(err) {
+		t.Errorf("Tasks file not found")
+	}
+
+	if len(listTasks) != 2 {
+		t.Errorf("Expected 3 tasks, got %d", len(listTasks))
+	}
+
+	if listTasks[0].Description != "Task 1" || listTasks[1].Description != "Task 2" {
+		t.Errorf("Task description didn't match")
+	}
+}
+
+func TestListTasksFileNotDoesntExist(t *testing.T) {
+	testFile := "test.json"
+	defer os.Remove(testFile)
+
+	listTasks, err := ListTasks("test2.json")
+	if err == nil {
+		t.Errorf("Expected an error for non-existent file, got nil")
+	}
+
+	if listTasks != nil {
+		t.Errorf("Expected nil tasks, got a slice with tasks")
+	}
+}

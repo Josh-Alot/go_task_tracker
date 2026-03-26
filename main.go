@@ -20,4 +20,7 @@ func main() {
 
 	tasks, _ := t.ListIncompleteTasks("tasks.json")
 	fmt.Println(tasks)
+
+	//newTasks, _ := t.UpdateTaskStatus("tasks.json", 1, t.InProgress)
+	//fmt.Println(newTasks)
 }

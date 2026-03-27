@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -67,9 +68,6 @@ func CreateTask(newTasks []Task, filePath string) error {
 	var err error
 	var existingTasks []Task
 
-	// check if the file already exists
-	// if the file doesn't exist, it will create a new file
-	// if the file exists, it recover the content into an slice
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		file, err := os.Create(filePath)
 		if err != nil {
@@ -77,19 +75,29 @@ func CreateTask(newTasks []Task, filePath string) error {
 		}
 
 		defer file.Close()
+
+		nextID := getNextID(nil)
+		for i := range newTasks {
+			newTasks[i].ID = nextID
+			nextID++
+		}
 	} else {
 		data, err := os.ReadFile(filePath)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// converts the JSON content into a slice
 		json.Unmarshal(data, &existingTasks)
+
+		nextID := getNextID(existingTasks)
+		for i := range newTasks {
+			newTasks[i].ID = nextID
+			nextID++
+		}
 	}
 
 	existingTasks = append(existingTasks, newTasks...)
 
-	// convert slice content to JSON content
 	data, err := json.MarshalIndent(existingTasks, "", "\t")
 	if err != nil {
 		log.Fatal(err)
@@ -97,6 +105,18 @@ func CreateTask(newTasks []Task, filePath string) error {
 
 	os.WriteFile(filePath, data, 0644)
 	return err
+}
+
+func getNextID(tasks []Task) int {
+	if len(tasks) == 0 {
+		return 1
+	}
+
+	maxTask := slices.MaxFunc(tasks, func(a, b Task) int {
+		return cmp.Compare(a.ID, b.ID)
+	})
+
+	return maxTask.ID + 1
 }
 
 func ListTasks(filePath string) ([]Task, error) {

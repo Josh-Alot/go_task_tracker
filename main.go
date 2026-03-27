@@ -9,16 +9,11 @@ import (
 func main() {
 	fmt.Printf("Go Task Tracker CLI")
 
-	tasks, err := t.ListTasks("tasks.json")
-	if err != nil {
-		fmt.Printf("%v", err)
+	tasks := []t.Task{
+		{Description: "Buy groceries"},
 	}
 
-	fmt.Println(tasks)
+	t.CreateTask(tasks, "tasks.json")
 
-	tasks, err = t.DeleteAllTasks("tasks.json")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	fmt.Println(tasks)
+	fmt.Println(t.ListTasks("tasks.json"))
 }

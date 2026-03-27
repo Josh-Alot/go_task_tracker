@@ -11,16 +11,30 @@ func TestCreateTask(t *testing.T) {
 	defer os.Remove(testFile)
 
 	tasks := []Task{
-		{ID: 1, Description: "Task 1", Status: Todo},
+		{Description: "Task 1"},
 	}
 
 	err := CreateTask(tasks, testFile)
 	if err != nil {
-		t.Fatalf("CreateTask failed: %v", err)
+		t.Errorf("CreateTask failed: %v", err)
 	}
 
 	if _, err := os.Stat(testFile); os.IsNotExist(err) {
-		t.Error("Expected tasks file to be created")
+		t.Errorf("Expected tasks file to be created")
+	}
+
+	data, err := os.ReadFile(testFile)
+	if err != nil {
+		t.Errorf("Failed to read file: %v", err)
+	}
+
+	var savedTasks []Task
+	if err := json.Unmarshal(data, &savedTasks); err != nil {
+		t.Fatalf("Failed to unmarshal json file: %v", err)
+	}
+
+	if savedTasks[0].ID != 1 {
+		t.Errorf("Expected id equals to 1, got %d", tasks[0].ID)
 	}
 }
 
@@ -30,8 +44,8 @@ func TestCreateMultipletTasks(t *testing.T) {
 
 	// Creates a new test file
 	tasks := []Task{
-		{ID: 1, Description: "Task 1", Status: 0},
-		{ID: 2, Description: "Task 2", Status: 1},
+		{Description: "Task 1"},
+		{Description: "Task 2"},
 	}
 
 	err := CreateTask(tasks, testFile)
@@ -58,6 +72,14 @@ func TestCreateMultipletTasks(t *testing.T) {
 		t.Errorf("Task description didn't match")
 	}
 
+	if savedTasks[0].ID != 1 {
+		t.Errorf("Expected id equals to 1, got %d", tasks[0].ID)
+	}
+
+	if savedTasks[1].ID != 2 {
+		t.Errorf("Expected id equals to 2, got %d", tasks[1].ID)
+	}
+
 	// Creating a third task and test the file
 	newTasks := []Task{
 		{ID: 3, Description: "Task 3", Status: 0},
@@ -65,16 +87,16 @@ func TestCreateMultipletTasks(t *testing.T) {
 
 	err = CreateTask(newTasks, testFile)
 	if err != nil {
-		t.Fatalf("Failed including new task: %v", err)
+		t.Errorf("Failed including new task: %v", err)
 	}
 
 	data, err = os.ReadFile(testFile)
 	if err != nil {
-		t.Fatalf("Failed to read file: %v", err)
+		t.Errorf("Failed to read file: %v", err)
 	}
 
 	if err := json.Unmarshal(data, &savedTasks); err != nil {
-		t.Fatalf("Failed to unmarshal json file: %v", err)
+		t.Errorf("Failed to unmarshal json file: %v", err)
 	}
 
 	if len(savedTasks) != 3 {
@@ -83,6 +105,10 @@ func TestCreateMultipletTasks(t *testing.T) {
 
 	if savedTasks[2].Description != "Task 3" {
 		t.Errorf("Task description didn't match")
+	}
+
+	if savedTasks[2].ID != 3 {
+		t.Errorf("Expected id equals to 3, got %d", tasks[2].ID)
 	}
 }
 
